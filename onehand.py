@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import division
-import pydealer
-import uuid
-import pymysql
+import pydealer     # Used to magage the deck of cards so we don't have to write our own module
+import uuid         # Used to generate a unique "run ID" to store in the database
+import pymysql      # Only supporting MySQL/MariaDB right now, but should probably expand that
 import argparse
 
 # Collect the arguments and set up some defaults
@@ -16,6 +16,8 @@ ap.add_argument('--debug', help='Print debug info to the screen', required=False
 
 args = ap.parse_args()
 
+
+# Variables are a little funky because I moved this from a previous version and didn't feel like changing var names
 if args.debug:
     debug = True
 else:
