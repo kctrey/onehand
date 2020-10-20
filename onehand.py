@@ -6,7 +6,7 @@ import pydealer     # Used to magage the deck of cards so we don't have to write
 import uuid         # Used to generate a unique "run ID" to store in the database
 import pymysql      # Only supporting MySQL/MariaDB right now, but should probably expand that
 import argparse
-import configparser # TODO Move everything to a config file
+import configparser
 
 # Collect the arguments and set up some defaults
 ap = argparse.ArgumentParser()
@@ -190,25 +190,25 @@ def play(game_type, run_count):
                 cursor.execute(sql, (game_type.title(), win, cards_left, gm_four_matches, gm_two_matches, first_match_type, first_match, game_fingerprint, run_id))
 
         # Update the progress bar if needed
-        if (int(run_count) >= 20): printProgressBar(run_num + 1, int(run_count), prefix = 'Playing:', suffix = 'Complete', length = 50)
+        if (int(run_count) >= 20): printProgressBar(run_num + 1, int(run_count), prefix = game_type.title(), suffix = 'Complete', length = 50)
 
 
-    # Print the summary of games played
-    print("\n=== %s Game Stats ===" % (game_type.title()))
-    print("Run ID:", run_id)
-    print("Wins:",win_count)
-    print("Losses:",loss_count)
-    print("Win Percentage: {:.2%}".format(int(win_count)/int(run_count)))
-    print("Min cards left:",min(loss_stats))
-    print("Max cards left:",max(loss_stats))
-    print("Avg cards left:",sum(loss_stats)/len(loss_stats))
-    print("Total 4-card matches:",four_matches)
-    print("Total 2-card matches:",two_matches)
-    print("Total number of cards discarded:",cards_discarded)
-
+    # Return the summary of games played
+    retstring = "\n=== %s Game Stats ===" % (game_type.title())
+    retstring += "\nRun ID: %s" % run_id
+    retstring += "\nWins: %s" % win_count
+    retstring += "\nLosses %s" % loss_count
+    retstring += "\nWin Percentage: %s" % "{:.2%}".format(int(win_count)/int(run_count))
+    retstring += "\nMin cards left: %s" % min(loss_stats)
+    retstring += "\nMax cards left: %s" % max(loss_stats)
+    retstring += "\nAvg cards left: %s" % round((sum(loss_stats)/len(loss_stats)))
+    retstring += "\nTotal 4-card matches: %s" % four_matches
+    retstring += "\nTotal 2-card matches: %s" % two_matches
+    retstring += "\nTotal number of cards discarded %s" % cards_discarded
     if int(run_count) == 1:
-        print("Game Fingerprint: ")
-        print(game_fingerprint)
+        retstring += "\nGame Fingerprint:\n\t%s" % game_fingerprint
+
+    return retstring
 
 
     
@@ -223,8 +223,11 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
         print()
 
 # Main play loop
-play('Normal', run_count)
-play('Reverse', run_count)
+results1 = play('Normal', run_count)
+results2 = play('Reverse', run_count)
+
+print(results1)
+print(results2)
 
 # Commit and close the DB connection
 if use_db:
