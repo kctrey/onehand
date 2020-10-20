@@ -6,37 +6,51 @@ import pydealer     # Used to magage the deck of cards so we don't have to write
 import uuid         # Used to generate a unique "run ID" to store in the database
 import pymysql      # Only supporting MySQL/MariaDB right now, but should probably expand that
 import argparse
+import configparser # TODO Move everything to a config file
 
 # Collect the arguments and set up some defaults
 ap = argparse.ArgumentParser()
 
 ap.add_argument("-n", "--games", required=False, help="Number of games to play", type=int)
+ap.add_argument('-c', '--config', required=False, help='Location of config file to use')
 ap.add_argument('--nodb', help='Do not write games to the database', required=False, action='store_true')
 ap.add_argument('--debug', help='Print debug info to the screen', required=False, action='store_true')
 
 args = ap.parse_args()
 
+use_db = False  # Assume we aren't writing to a DB unless we find out differently
 
-# Variables are a little funky because I moved this from a previous version and didn't feel like changing var names
-if args.debug:
+# Get the config file
+config = configparser.ConfigParser()
+if args.config:
+    config.read(args.config)
+else:
+    config.read('config')
+
+
+if args.debug:  # Check for debug on the command line
     debug = True
 else:
-    debug = False
+    if config['General'].getboolean('debug'):   # Check to see if debug is enabled in the config file
+        debug = True
+    else:
+        debug = False
 
-if not args.games:
-    run_count = input("How many games should I play?\n")
-else:
+
+if args.games:  # Check for number of games on the command line
     run_count = args.games
+else:
+    if 'games' in config['General']:    # Check for number of games in config file
+        run_count = config['General']['games']
+    else:    # Prompt the user for the number of games
+        run_count = input("How many games should I play?\n")
 
 # Let's find out if we need to write to the DB or not
-if not args.nodb:
-    # Set up a DB connection
-    db_host = 'localhost'
-    db_user = 'trey'
-    db_pass = 'hope96'
-    db_database = 'SOLITAIRE'
-
-    db_conn = pymysql.connect(db_host, db_user, db_pass, db_database)
+if not args.nodb:   # If the commandline option is set, don't bother setting up a DB
+    if config['Database'].getboolean('database'):
+        # Set up a DB connection
+        db_conn = pymysql.connect(config['Database']['host'], config['Database']['user'], config['Database']['password'], config['Database']['databasename'])
+        use_db = True
 
 
 run_id = str(uuid.uuid4())
@@ -168,7 +182,7 @@ def play(game_type, run_count):
             loss_stats.append(len(hand))
 
         # Write the values to the DB if needed
-        if not args.nodb:
+        if use_db:
             with db_conn.cursor() as cursor:
                 cards_left = len(hand)
                 sql = "INSERT INTO games (game_type, win, cards_left, four_matches, two_matches, first_match_type, first_match_card, fingerprint, run_id) "
@@ -208,11 +222,11 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     if iteration == total:
         print()
 
-# Main play look
+# Main play loop
 play('Normal', run_count)
 play('Reverse', run_count)
 
 # Commit and close the DB connection
-if not args.nodb:
+if use_db:
     db_conn.commit()
     db_conn.close()

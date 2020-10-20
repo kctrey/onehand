@@ -1,0 +1,12 @@
+[General]
+Debug = no
+
+[Database]
+# Set the following to yes to write game results to a database
+Database = yes
+
+# Database connection info
+Host = localhost
+DatabaseName = SOLITAIRE
+User = username
+Password = password
