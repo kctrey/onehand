@@ -13,6 +13,8 @@ ap = argparse.ArgumentParser()
 
 ap.add_argument("-n", "--games", required=False, help="Number of games to play", type=int)
 ap.add_argument('-c', '--config', required=False, help='Location of config file to use')
+ap.add_argument('--normal', required=False, help='Play games using the normal rules', action='store_true')
+ap.add_argument('--reverse', required=False, help='Play games using the reverse rules', action='store_true')
 ap.add_argument('--nodb', help='Do not write games to the database', required=False, action='store_true')
 ap.add_argument('--debug', help='Print debug info to the screen', required=False, action='store_true')
 
@@ -195,7 +197,6 @@ def play(game_type, run_count):
 
     # Return the summary of games played
     retstring = "\n=== %s Game Stats ===" % (game_type.title())
-    retstring += "\nRun ID: %s" % run_id
     retstring += "\nWins: %s" % win_count
     retstring += "\nLosses %s" % loss_count
     retstring += "\nWin Percentage: %s" % "{:.2%}".format(int(win_count)/int(run_count))
@@ -223,11 +224,13 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
         print()
 
 # Main play loop
-results1 = play('Normal', run_count)
-results2 = play('Reverse', run_count)
+results = "\nRun ID: %s" % run_id
+if args.normal or (not args.normal and not args.reverse):
+    results += play('Normal', run_count)
+if args.reverse or (not args.normal and not args.reverse):
+    results += play('Reverse', run_count)
 
-print(results1)
-print(results2)
+print(results)
 
 # Commit and close the DB connection
 if use_db:
