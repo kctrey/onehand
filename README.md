@@ -1,5 +1,5 @@
 # onehand.py
-This Python program runs a simulation of repeated games of One-Hand Solitaire, calculating statistics and optionally writing the game records to a MySQL/MariaDB database for additional analytics.
+This Python program runs a simulation of repeated games of One-Hand Solitaire, calculating statistics and optionally writing the game records to a MySQL/MariaDB database for additional analysis.
 
 ## Background
 Growing up, I played a game of solitaire that I always knew as One-Hand Solitaire. The rules were simple, and the game could be played in the hand without needing to lay cards out on a flat surface. The problem was that the game was incredibly hard to win.
@@ -10,9 +10,11 @@ As I came to the conclusion that the odds of winning were lower than I expected,
 
 The project here is the culmination of both of the programs I wrote. I decided to try and optimize the code by combining the two simulations into a single program, with a built-in database function so that I could database all of the games and do analysis on them.
 
-At this point, I have played over 2,000,000 games of each. If you actually have interest in the historical data, I would be happy to share the database tables.
+At this point, I have played over 3,000,000 games of each. If you actually have interest in the historical data, I would be happy to share the database tables.
 
 ## One-Hand Solitaire Rules
+*These are the rules for the "normal" way of playing. For Reverse One-Hand Solitaire, just flip how many cards you remove for a suit and value match*
+
 Taking a standard, shuffled 52-card deck of playing cards (without Jokers), hold the deck face down in your hand. Draw from the back of the deck four cards and place them on top fanned out so that the suit and number can be seen.
 
 If the first and fourth card are the same suit, discard the two middle cards, placing them on your lap if seated or in a pocket or elsewhere if standing. If there are previously drawn cards in your hand, rearrange the hand so that four cards are visible. If there are not enough cards to do this, draw from the back so that four cards are visible.
@@ -25,7 +27,8 @@ Continue in this fashion until the end of the deck is reached. If all cards are 
 
 ## Usage
 ```
-usage: onehand.py [-h] [-n GAMES] [-c CONFIG] [--nodb] [--debug]
+usage: onehand.py [-h] [-n GAMES] [-c CONFIG] [--normal] [--reverse] [--nodb]
+                  [--debug]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -33,6 +36,8 @@ optional arguments:
                         Number of games to play
   -c CONFIG, --config CONFIG
                         Location of config file to use
+  --normal              Play games using the normal rules
+  --reverse             Play games using the reverse rules
   --nodb                Do not write games to the database
   --debug               Print debug info to the screen
 ```
