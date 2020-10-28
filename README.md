@@ -26,6 +26,8 @@ Repeat the above process of discarding until the first and fourth card are neith
 Continue in this fashion until the end of the deck is reached. If all cards are discarded, you win the game.
 
 ## Usage
+*Using the --debug option results in a lot of output: ever draw, the complete hand, and every match*
+
 ```
 usage: onehand.py [-h] [-n GAMES] [-c CONFIG] [--normal] [--reverse] [--nodb]
                   [--debug]
