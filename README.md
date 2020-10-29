@@ -67,3 +67,10 @@ This can be decoded as:
 The analysis of the fingerprints turned out to be interesting. In the normal rules, I have played over 3,000,000 games and have never seen a duplicate fingerprint. But the reverse rules are a different story. The fingerprint is still fairly unique, but after 3,000,000 games of reverse, I've had about 45 duplicates, including two games where not a single match occurred.
 
 You will notice that there is an index on the fingerprint column of the table to help with this analysis.
+
+## Current Stats
+The following table shows the win statistics of the games that I currently have databased
+| Game Type | Games Played | Wins | Win Percentage |
+| --------- |:------------:|:----:|:--------------:|
+| Normal    | 4,381,835 | 22,984 | 0.52% |
+| Reverse   | 4,381,835 | 227,467 | 5.19% |
