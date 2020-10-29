@@ -30,7 +30,7 @@ Continue in this fashion until the end of the deck is reached. If all cards are 
 
 ```
 usage: onehand.py [-h] [-n GAMES] [-c CONFIG] [--normal] [--reverse] [--nodb]
-                  [--debug]
+                  [--debug] [--timing]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -42,4 +42,28 @@ optional arguments:
   --reverse             Play games using the reverse rules
   --nodb                Do not write games to the database
   --debug               Print debug info to the screen
+  --timing              Print program execution timing
 ```
+
+## Game Fingerprints
+As part of my analysis, I started wondering if games were ever identical, meaning that suit and value matches happened in the exact same order between games. I came up with a fingeprint string where periods (.) were used to indicate a card draw, S was used to indicate a suit match and R was used to indicate a rank/value match, so that I could quickly see how a game played out. Plus, it had the added bonus of giving me a way to prove that PyDealer was really playing random games, not repeating decks often.
+
+For example, take the following fingerprint:
+`....S..R....S.S.S....SS....SS.....S..S..S...S.SSR.....S.......R.S..S`
+
+This can be decoded as:
+1. Draw 4 cards
+2. 4th card is a Suit match, remove 2 cards (in normal rules)
+3. Draw 2 cards. Required since the removal of 2 cards in the previous play left us with 2 cards in the hand.
+4. New 4th card is a Rank match, remove 4 cards
+5. Draw 4 cards. No match found until the 4th card
+6. Suit match, remove 2 cards
+7. Draw one card
+8. That card is a Suit match, remove 2 cards
+9. Draw one card
+10. That card is a Suit match, remove 2 cards
+11. Etc...
+
+The analysis of the fingerprints turned out to be interesting. In the normal rules, I have played over 3,000,000 games and have never seen a duplicate fingerprint. But the reverse rules are a different story. The fingerprint is still fairly unique, but after 3,000,000 games of reverse, I've had about 45 duplicates, including two games where not a single match occurred.
+
+You will notice that there is an index on the fingerprint column of the table to help with this analysis.

@@ -17,10 +17,15 @@ ap.add_argument('--normal', required=False, help='Play games using the normal ru
 ap.add_argument('--reverse', required=False, help='Play games using the reverse rules', action='store_true')
 ap.add_argument('--nodb', help='Do not write games to the database', required=False, action='store_true')
 ap.add_argument('--debug', help='Print debug info to the screen', required=False, action='store_true')
+ap.add_argument('--timing', help='Print program execution timing', required=False, action='store_true')
 
 args = ap.parse_args()
 
 use_db = False  # Assume we aren't writing to a DB unless we find out differently
+
+if args.timing:
+    import timing   # I used someone else's code for this module, but it seems to work well enough for my needs
+
 
 # Get the config file
 config = configparser.ConfigParser()

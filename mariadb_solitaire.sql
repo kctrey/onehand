@@ -18,5 +18,6 @@ CREATE TABLE `games` (
   `first_match_card` int(10) unsigned DEFAULT NULL,
   `fingerprint` varchar(100) DEFAULT NULL,
   `run_id` varchar(40) DEFAULT NULL,
-  PRIMARY KEY (`game_id`)
+  PRIMARY KEY (`game_id`),
+  KEY `fp_idx` (`fingerprint`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;
