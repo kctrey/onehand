@@ -10,7 +10,7 @@ As I came to the conclusion that the odds of winning were lower than I expected,
 
 The project here is the culmination of both of the programs I wrote. I decided to try and optimize the code by combining the two simulations into a single program, with a built-in database function so that I could database all of the games and do analysis on them.
 
-At this point, I have played over 3,000,000 games of each. If you actually have interest in the historical data, I would be happy to share the database tables.
+At this point, I have played over 5,000,000 games of each. If you actually have interest in the historical data, I would be happy to share the database tables.
 
 ## One-Hand Solitaire Rules
 *These are the rules for the "normal" way of playing. For Reverse One-Hand Solitaire, just flip how many cards you remove for a suit and value match*
@@ -64,7 +64,7 @@ This can be decoded as:
 10. That card is a Suit match, remove 2 cards
 11. Etc...
 
-The analysis of the fingerprints turned out to be interesting. In the normal rules, I have played over 3,000,000 games and have never seen a duplicate fingerprint. But the reverse rules are a different story. The fingerprint is still fairly unique, but after 3,000,000 games of reverse, I've had about 45 duplicates, including two games where not a single match occurred.
+The analysis of the fingerprints turned out to be interesting. In the normal rules, I have played over 5,000,000 games and have never seen a duplicate fingerprint. But the reverse rules are a different story. The fingerprint is still fairly unique, but after 5,000,000 games of reverse, I've had about 45 duplicates, including two games where not a single match occurred.
 
 You will notice that there is an index on the fingerprint column of the table to help with this analysis.
 
@@ -72,5 +72,6 @@ You will notice that there is an index on the fingerprint column of the table to
 The following table shows the win statistics of the games that I currently have databased
 | Game Type | Games Played | Wins | Win Percentage |
 | --------- |:------------:|:----:|:--------------:|
-| Normal    | 4,381,835 | 22,984 | 0.52% |
-| Reverse   | 4,381,835 | 227,467 | 5.19% |
+| Normal  | 5,000,000 | 26,214 | 0.52% |
+| Reverse  | 5,000,000 | 259,436 | 5.19% |
+
