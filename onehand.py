@@ -62,6 +62,12 @@ if not args.nodb:   # If the commandline option is set, don't bother setting up 
 
 run_id = str(uuid.uuid4())
 
+def print_hand(hand):
+    print(f"Hand: ({len(hand)})")
+    print(hand)
+    print("------------------------")
+
+
 def play(game_type, run_count):
     # Set up the blank stats
     win_count = 0
@@ -94,14 +100,15 @@ def play(game_type, run_count):
         draw_needed = True
 
         while len(deck) > 0:
-            if debug: print("Hand")
-            if debug: print(hand)
-            if debug: print("------------------------")
+            #if debug: print("Hand")
+            #if debug: print(hand)
+            #if debug: print("------------------------")
             if draw_needed:
                 draw_card = deck.deal(1)
                 hand.add(draw_card)
                 game_fingerprint += '.'
-                if debug: print("Draw - %s" % draw_card)
+                if debug: print("\tDraw - %s" % draw_card)
+                if debug: print_hand(hand)
             else:
                 draw_needed = True
 
@@ -114,7 +121,7 @@ def play(game_type, run_count):
             current_card = hand[last_card]  # The actual last card
             check_card = hand[last_card-3]  # The "check" card
 
-            if debug: print("Checking - %s against %s" % (current_card, check_card))
+            if debug: print("\tChecking - %s against %s" % (current_card, check_card))
 
             # Check for a 4-card-draw match (rank in normal, suit in reverse
             if game_type.lower() == 'normal':
@@ -132,25 +139,26 @@ def play(game_type, run_count):
 
             # See if the value matches and remove all four cards from the hand
             if match4:
-                if debug: print("Four Card match - %s matches %s" % (current_card, check_card))
+                if debug: print("\tFour Card match - %s matches %s" % (current_card, check_card))
                 if first_match == 0:
                     first_match = len(hand)
                     first_match_type = match_type
                 four_matches += 1
                 gm_four_matches += 1
                 game_fingerprint += match_type
-                if debug: print("Dicard - %s" % hand[last_card])
+                if debug: print("\tDiscard - %s" % hand[last_card])
                 del hand[last_card]
-                if debug: print("Dicard - %s" % hand[last_card-1])
+                if debug: print("\tDiscard - %s" % hand[last_card-1])
                 del hand[last_card-1]
-                if debug: print("Dicard - %s" % hand[last_card-2])
+                if debug: print("\tDiscard - %s" % hand[last_card-2])
                 del hand[last_card-2]
-                if debug: print("Dicard - %s" % hand[last_card-3])
+                if debug: print("\tDiscard - %s" % hand[last_card-3])
                 del hand[last_card-3]
                 cards_discarded += 4
                 draw_needed = True
                 match4 = False
                 match_type = ''
+                if debug: print_hand(hand)
 
             if game_type.lower()== 'normal':
                 if current_card.suit == check_card.suit:
@@ -167,19 +175,20 @@ def play(game_type, run_count):
 
             # See if the suit matched and remove the two cards between the last card and the check card
             if match2:
-                if debug: print("Two Card match - %s matches %s" % (current_card, check_card))
+                if debug: print("\tTwo Card match - %s matches %s" % (current_card, check_card))
                 if first_match == 0:
                     first_match = len(hand)
                     first_match_type = match_type
                 two_matches += 1
                 gm_two_matches += 1
                 game_fingerprint += match_type
-                if debug: print("Dicard - %s" % hand[last_card-1])
+                if debug: print("\tDiscard - %s" % hand[last_card-1])
                 del hand[last_card-1]
-                if debug: print("Dicard - %s" % hand[last_card-2])
+                if debug: print("\tDiscard - %s" % hand[last_card-2])
                 del hand[last_card-2]
                 cards_discarded += 2
                 draw_needed = False
+                if debug: print_hand(hand)
         if len(hand) == 0:      # Winner winner
             win = 1
             win_count+=1
