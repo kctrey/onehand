@@ -76,9 +76,12 @@ class Run:
         self.id: str = str(uuid.uuid4())
         self.games = []
 
-    def _print_progress_bar(self, iteration):
-        total = len(self.games)
-        prefix = 'Playing:'
+    def _print_progress_bar(self, iteration, prefix: str = 'Playing'):
+        if len(self.games) == 0:
+            total = self.count
+        else:
+            total = len(self.games)
+        prefix += ':'
         suffix = 'Complete'
         decimals = 1
         length = 50
@@ -167,6 +170,10 @@ class Run:
     def prepare(self):
         for x in range(self.count):
             prep_games = []
+
+            if int(self.count) >= 20:
+                self._print_progress_bar(x + 1, prefix="Preparing")
+
             if self.game_type.lower() == 'both' or self.game_type.lower() == 'normal':
                 normal_game = Game(type='normal', run_id=self.id)
                 prep_games.append(normal_game)
