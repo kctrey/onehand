@@ -77,7 +77,7 @@ class Run:
         self.games = []
 
     def _print_progress_bar(self, iteration, prefix: str = 'Playing'):
-        if len(self.games) == 0:
+        if prefix.lower() == 'preparing':
             total = self.count
         else:
             total = len(self.games)
