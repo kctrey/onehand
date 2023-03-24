@@ -1,9 +1,18 @@
 [General]
+# The number of games to play. Most people won't set this unless you are running as party of a cron job
+#Games = 500
+
+# Print debug info. You do not want to do this. There is a ton of output, because it shows every play
 Debug = no
+
+[Game Rules]
+# For each loop, do you want to use the same deck for the Normal and Reverse game to see how a single deck would play
+# using both rules. When set to 'yes', only a single game will be played and no database statistics will be written.
+SameDeck = yes
 
 [Database]
 # Set the following to yes to write game results to a database
-Database = yes
+Database = no
 
 # Database connection info
 Host = localhost
