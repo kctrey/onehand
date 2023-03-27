@@ -77,10 +77,7 @@ class Run:
         self.games = []
 
     def _print_progress_bar(self, iteration, prefix: str = 'Playing'):
-        if prefix.lower() == 'preparing':
-            total = self.count
-        else:
-            total = len(self.games)
+        total = self.count
         prefix += ':'
         suffix = 'Complete'
         decimals = 1
@@ -152,6 +149,8 @@ class Run:
         print("=== Run Summary ===")
         print(f"Run ID: {self.id}")
         print(f"Rules: {stats['run']['rules'].title()}")
+        if stats['run']['rules'] == 'both':
+            print(f"Same Deck: {str(self.same_deck)}")
         print(f"Games played: {stats['run']['games']}")
         print(f"Wins: {stats['run']['wins']}")
         print(f"Losses: {stats['run']['losses']}")
@@ -167,38 +166,28 @@ class Run:
                 print(f"Min cards left: {stats[game_type]['min_cards_left']}")
                 print(f"Average cards left: {stats[game_type]['avg_cards_left']}")
 
-    def prepare(self):
+    def start(self):
         for x in range(self.count):
-            prep_games = []
-
             if int(self.count) >= 20:
-                self._print_progress_bar(x + 1, prefix="Preparing")
+                self._print_progress_bar(x + 1)
 
-            if self.game_type.lower() == 'both' or self.game_type.lower() == 'normal':
-                normal_game = Game(type='normal', run_id=self.id)
-                prep_games.append(normal_game)
-                self.games.append(normal_game)
-            if self.game_type.lower() == 'both' or self.game_type.lower() == 'reverse':
-                reverse_game = Game(type='reverse', run_id=self.id)
-                prep_games.append(reverse_game)
-                self.games.append(reverse_game)
+            loop_games = []
+            for gt in ['normal', 'reverse']:
+                if self.game_type.lower() == gt or self.game_type.lower() == 'both':
+                    this_game = Game(type=gt, run_id=self.id)
+                    loop_games.append(this_game)
+                    self.games.append(this_game)
 
             # If we are playing with the same deck for each game, build and shuffle a deck and associate it
             if self.same_deck is True and self.game_type.lower() == 'both':
                 deck1 = pydealer.Deck()
                 deck1.shuffle()
                 deck2 = copy.deepcopy(deck1)
-                prep_games[0].deck = deck1
-                prep_games[1].deck = deck2
+                loop_games[0].deck = deck1
+                loop_games[1].deck = deck2
 
-    def start(self):
-        if len(self.games) == 0:
-            self.prepare()
-
-        for x, game in enumerate(self.games):
-            if int(self.count) >= 20:
-                self._print_progress_bar(x+1)
-            game.play()
+            for g in loop_games:
+                g.play()
 
         if use_db is True:
             db_conn.commit()
@@ -209,12 +198,9 @@ class Run:
 
 class Game:
     def __init__(self, type: str, run_id: str, deck: Optional[pydealer.Deck] = None):
-        if deck is None:
-            deck = pydealer.Deck()
-            deck.shuffle()
         self.type: str = type.lower()
         self.run_id: str = run_id
-        self.deck: pydealer.Deck = deck
+        self.deck: Optional[pydealer.Deck] = deck
         self.played: bool = False
         self.win: Optional[bool] = None
         self.cards_left: int = 52
@@ -227,6 +213,9 @@ class Game:
 
     def play(self):
         self.played = True
+        if self.deck is None:
+            self.deck = pydealer.Deck()
+            self.deck.shuffle()
         # Set up a stack to deal into
         hand = pydealer.Stack()
 
@@ -325,6 +314,9 @@ class Game:
         else:
             self.win = False
 
+        # Garbage cleanup: Remove the pydealer.deck from the Game to free up a little memory
+        del self.deck
+
         if use_db is True:
             self._write_db()
         return True
@@ -365,7 +357,6 @@ if __name__ == '__main__':
     if config['Game Rules'].getboolean('SameDeck') is True:
         run.same_deck = True
 
-    run.prepare()
     run.start()
     run.print_stats()
 
